@@ -1,0 +1,8 @@
+---
+- name: Instalación de Drupal
+  connection: local
+  hosts: {{ host }}
+  become: yes
+
+  roles:
+    - install_wordpress
