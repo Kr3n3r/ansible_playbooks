@@ -1,9 +1,0 @@
----
-- name: Instalación de Drupal
-  connection: local
-  hosts: {{ host }}
-  become: yes
-
-  roles:
-    - hosting_drupal
-    - install_drupal
