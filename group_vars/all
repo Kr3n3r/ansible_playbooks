@@ -16,9 +16,11 @@ name_user: {{ name_user }}
 surname_user: {{ surname_user }}
 
 server: {{ server }}
+cms : {{ cms }}
 
 mysql_root : {{ mysql_user}}
 mysql_root_password: {{ mysql_password }}
 http_host: {{ domain }}
 http_conf: {{ domain }}.conf
 http_port: "80"
+
