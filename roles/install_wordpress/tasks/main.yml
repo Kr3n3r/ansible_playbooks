@@ -12,6 +12,8 @@
         group: "www-data"
         mode: '0755'
       tags: [ apache ]
+      become: yes
+      become_user: root
 
     - name: Set up Apache VirtualHost
       template:
@@ -19,21 +21,29 @@
         dest: "/etc/apache2/sites-available/{{ http_conf }}"
       notify: Reload Apache
       tags: [ apache ]
+      become: yes
+      become_user: root
 
     - name: Enable rewrite module
       shell: /usr/sbin/a2enmod rewrite
       notify: Reload Apache
       tags: [ apache ]
+      become: yes
+      become_user: root
 
     - name: Enable new site
       shell: /usr/sbin/a2ensite {{ http_conf }}
       notify: Reload Apache
       tags: [ apache ]
+      become: yes
+      become_user: root
 
     - name: Disable default Apache site
       shell: /usr/sbin/a2dissite 000-default.conf
       notify: Restart Apache
       tags: [ apache ]
+      become: yes
+      become_user: root
 
   # MySQL Configuration
     # - name: Remove all anonymous user accounts
@@ -81,6 +91,8 @@
         port: "{{ http_port }}"
         proto: tcp
       tags: [ system ]
+      become: yes
+      become_user: root
 
   # WordPress Configuration
     - name: Download and unpack latest WordPress
@@ -90,6 +102,8 @@
         remote_src: yes
         creates: "/var/www/html/{{ http_host }}/wordpress"
       tags: [ wordpress ]
+      become: yes
+      become_user: root
 
     - name: Set ownership
       file:
@@ -99,17 +113,25 @@
         owner: www-data
         group: www-data
       tags: [ wordpress ]
+      become: yes
+      become_user: root
 
     - name: Set permissions for directories
       shell: "/usr/bin/find /var/www/html/{{ http_host }}/wordpress/ -type d -exec chmod 750 {} \\;"
       tags: [ wordpress ]
+      become: yes
+      become_user: root
 
     - name: Set permissions for files
       shell: "/usr/bin/find /var/www/html/{{ http_host }}/wordpress/ -type f -exec chmod 640 {} \\;"
       tags: [ wordpress ]
+      become: yes
+      become_user: root
 
     - name: Set up wp-config
       template:
         src: "files/wp-config.php"
         dest: "/var/www/html/{{ http_host }}/wordpress/wp-config.php"
       tags: [ wordpress ]
+      become: yes
+      become_user: root

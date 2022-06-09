@@ -17,6 +17,8 @@
     dest: /var/www/html/{{ domain }}
     owner: www-data
     group: www-data
+  become: yes
+  become_user: root
 - name: Instalacion con script php
   command: >
     php /var/www/html/{{ domain }}/install/index_cli.php 
@@ -35,6 +37,8 @@
     --country=ES
     --password={{ admin_password }}
     --prefix=ps_
+  become: yes
+  become_user: root
 
 - name : Cambiar el nombre de la tienda
   community.mysql.mysql_query:
@@ -50,12 +54,18 @@
     owner: www-data
     group: www-data
     recurse: yes
+  become: yes
+  become_user: root
 - name: Borramos el index.html de prestashop
   file:
     path: /var/www/html/{{ domain }}/index.html
     state: absent
   notify: restart apache
+  become: yes
+  become_user: root
 - name : Borrar la carpeta de instalación
   ansible.builtin.file:
     path : /var/www/html/{{ domain }}/install
     state : absent
+  become: yes
+  become_user: root

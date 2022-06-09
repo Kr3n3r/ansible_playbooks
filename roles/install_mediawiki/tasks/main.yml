@@ -16,6 +16,8 @@
     src: /tmp/mediawiki-1.32.1/
     dest: /var/www/html/{{ domain }}
     recursive: True
+  become: yes
+  become_user: root
 - name: Instalacion con script php
   command: >
     php /var/www/html/{{ domain }}/maintenance/install.php 
@@ -30,14 +32,20 @@
     --lang=es 
     --scriptpath="" 
     --pass={{ admin_password }} "{{ site_name }}" "{{ admin_user }}"
+  become: yes
+  become_user: root
 - name: Cambiamos permisos mediawiki
   file:
     dest: /var/www/html/{{ domain }}
     owner: www-data
     group: www-data
     recurse: yes
+  become: yes
+  become_user: root
 - name: Borramos el index.html de mediawiki
   file:
     path: /var/www/html/{{ domain }}/index.html
     state: absent
   notify: restart apache
+  become: yes
+  become_user: root
