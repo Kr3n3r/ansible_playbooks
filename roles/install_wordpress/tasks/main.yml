@@ -1,10 +1,5 @@
 ---
-# - hosts: all
-#   become: true
-
-#   tasks:
-  # Apache Configuration
-    - name: Create document root
+    - name: Crear la carpeta de la aplicación
       file:
         path: "/var/www/html/{{ http_host }}"
         state: directory
@@ -15,7 +10,7 @@
       become: yes
       become_user: root
 
-    - name: Set up Apache VirtualHost
+    - name: Establecer el virtualhost de apache
       template:
         src: "files/apache.conf"
         dest: "/etc/apache2/sites-available/{{ http_conf }}"
@@ -24,21 +19,21 @@
       become: yes
       become_user: root
 
-    - name: Enable rewrite module
+    - name: Activar el módulo rewrite
       shell: /usr/sbin/a2enmod rewrite
       notify: Reload Apache
       tags: [ apache ]
       become: yes
       become_user: root
 
-    - name: Enable new site
+    - name: Activar el sitio nuevo
       shell: /usr/sbin/a2ensite {{ http_conf }}
       notify: Reload Apache
       tags: [ apache ]
       become: yes
       become_user: root
 
-    - name: Disable default Apache site
+    - name: Desactivar el virtualhost por defecto
       shell: /usr/sbin/a2dissite 000-default.conf
       notify: Restart Apache
       tags: [ apache ]
@@ -46,7 +41,7 @@
       become_user: root
 
   # MySQL Configuration
-    # - name: Remove all anonymous user accounts
+    # - name: Eliminar los usuarios anónimos
     #   mysql_user:
     #     name: ''
     #     host_all: yes
@@ -55,7 +50,7 @@
     #     login_password: "{{ mysql_root_password }}"
     #   tags: [ mysql ]
 
-    # - name: Remove the MySQL test database
+    # - name: Eliminar la BBDD de prueba
     #   mysql_db:
     #     name: test
     #     state: absent
@@ -63,7 +58,7 @@
     #     login_password: "{{ mysql_root_password }}"
     #   tags: [ mysql ]
 
-    - name: Creates database for WordPress
+    - name: Crear la base de datos de {{ cms }}
       mysql_db:
         name: "{{ mysql_db }}"
         state: present
@@ -72,7 +67,7 @@
         login_password: "{{ mysql_root_password }}"
       tags: [ mysql ]
 
-    - name: Create MySQL user for WordPress
+    - name: Crear el usuario de la base de datos para {{ cms }}
       mysql_user:
         name: "{{ mysql_new_user }}"
         host : "%"
@@ -85,7 +80,7 @@
       tags: [ mysql ]
 
   # UFW Configuration
-    - name: "UFW - Allow HTTP on port {{ http_port }}"
+    - name: "UFW - Permitir el puerto {{ http_port }}"
       ufw:
         rule: allow
         port: "{{ http_port }}"
@@ -95,7 +90,7 @@
       become_user: root
 
   # WordPress Configuration
-    - name: Download and unpack latest WordPress
+    - name: Descargar {{ cms }}
       unarchive:
         src: https://wordpress.org/latest.tar.gz
         dest: "/var/www/html/{{ http_host }}"
@@ -105,7 +100,7 @@
       become: yes
       become_user: root
 
-    - name: Set ownership
+    - name: Establecer permisos de carpeta de {{ cms }}
       file:
         path: "/var/www/html/{{ http_host }}"
         state: directory
@@ -116,19 +111,19 @@
       become: yes
       become_user: root
 
-    - name: Set permissions for directories
+    - name: Establecer más permisos
       shell: "/usr/bin/find /var/www/html/{{ http_host }}/wordpress/ -type d -exec chmod 750 {} \\;"
       tags: [ wordpress ]
       become: yes
       become_user: root
 
-    - name: Set permissions for files
+    - name: Establecer permisos sobre archivos
       shell: "/usr/bin/find /var/www/html/{{ http_host }}/wordpress/ -type f -exec chmod 640 {} \\;"
       tags: [ wordpress ]
       become: yes
       become_user: root
 
-    - name: Set up wp-config
+    - name: Establecer la instalación de Wordpress
       template:
         src: "files/wp-config.php"
         dest: "/var/www/html/{{ http_host }}/wordpress/wp-config.php"

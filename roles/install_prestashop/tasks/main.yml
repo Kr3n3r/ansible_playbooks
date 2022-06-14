@@ -3,11 +3,11 @@
   mysql_db: name={{ mysql_db }} login_host={{ db_ip }} state=present collation=utf8_general_ci login_user={{ mysql_user }} login_password={{ mysql_password }}
 - name: Creación del usuario de la base de datos
   mysql_user: name={{ mysql_new_user }} password={{ mysql_new_password }} host="%" priv="{{ mysql_db }}.*:ALL" login_host={{ db_ip }} login_user={{ mysql_user }} login_password={{ mysql_password }} state=present
-- name: Descarga de prestashop
+- name: Descargar {{ cms }}
   get_url:
     url: https://download.prestashop.com/download/releases/prestashop_1.7.4.2.zip
     dest: /tmp
-- name: Descomprimimos los ficheros
+- name: Descomprimir los ficheros
   unarchive:
     src: /tmp/prestashop_1.7.4.2.zip
     dest: /tmp
@@ -29,7 +29,7 @@
     --db_password={{ mysql_new_password }} 
     --theme=classic 
     --language=es 
-    --email={{ name_user }}@{{ domain }}
+    --email={{ admin_user }}@{{ domain }}
     --first-name={{ name_user }} 
     --second-name={{ surname_user }}
     --timezone=Europe/Madrid
@@ -48,7 +48,7 @@
     login_password: "{{ mysql_new_password }}"
     query: UPDATE ps_configuration SET value = '{{ site_name }}' WHERE name = 'PS_SHOP_NAME'
     single_transaction: yes
-- name: Cambiamos permisos prestashop
+- name: Cambiar los permisos de {{ cms }}
   file:
     dest: /var/www/html/{{ domain }}
     owner: www-data
@@ -56,7 +56,7 @@
     recurse: yes
   become: yes
   become_user: root
-- name: Borramos el index.html de prestashop
+- name: Borrar el index.html de prueba
   file:
     path: /var/www/html/{{ domain }}/index.html
     state: absent

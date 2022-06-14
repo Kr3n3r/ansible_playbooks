@@ -5,7 +5,7 @@
     state : absent
   become: yes
   become_user: root
-- name: Crear directorio root
+- name: Crear directorio root de {{ cms }}
   file:
     path: /var/www/html/{{ domain }}
     state: directory
@@ -14,23 +14,23 @@
     mode: 0775
   become: yes
   become_user: root
-- name: Copiar el index.html
+- name: Crear un index.html de prueba
   template: >
     src=index.html
     dest=/var/www/html/{{ domain }}/index.html
   become: yes
   become_user: root
-- name: Copiar el virtualhost
+- name: Crear un virtualhost
   template: >
     src=virtualhost.conf
     dest=/etc/apache2/sites-available/{{ domain }}.conf
   become: yes
   become_user: root
-- name: Deshabilitamos el virtualhost por defecto   
+- name: Deshabilitar el virtualhost por defecto
   command: a2dissite 000-default.conf
   become: yes
   become_user: root
-- name: Habilitamos el virtualhost nuevo
+- name: Habilitar el virtualhost nuevo
   command: a2ensite {{ domain }}.conf
   become: yes
   become_user: root

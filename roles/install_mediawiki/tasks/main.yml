@@ -3,22 +3,22 @@
   mysql_db: name={{ mysql_db }} login_host={{ db_ip }} state=present collation=utf8_general_ci login_user={{ mysql_user }} login_password={{ mysql_password }}
 - name: Creación del usuario de la base de datos
   mysql_user: name={{ mysql_new_user }} password={{ mysql_new_password }} host="%" priv="{{ mysql_db }}.*:ALL" login_host={{ db_ip }} login_user={{ mysql_user }} login_password={{ mysql_password }} state=present
-- name: Descarga de mediawiki
+- name: Descargar {{ cms }}
   get_url:
     url: https://releases.wikimedia.org/mediawiki/1.32/mediawiki-1.32.1.tar.gz
     dest: /tmp
-- name: Descomprimimos los ficheros
+- name: Descomprimir los ficheros
   unarchive:
     src: /tmp/mediawiki-1.32.1.tar.gz
     dest: /tmp
-- name: Copiamos los ficheros
+- name: Copiar los ficheros
   synchronize:
     src: /tmp/mediawiki-1.32.1/
     dest: /var/www/html/{{ domain }}
     recursive: True
   become: yes
   become_user: root
-- name: Instalacion con script php
+- name: Instalación con script en php
   command: >
     php /var/www/html/{{ domain }}/maintenance/install.php 
     --dbname={{ mysql_db }} 
@@ -34,7 +34,7 @@
     --pass={{ admin_password }} "{{ site_name }}" "{{ admin_user }}"
   become: yes
   become_user: root
-- name: Cambiamos permisos mediawiki
+- name: Cambiar los permisos de la carpeta de {{ cms }}
   file:
     dest: /var/www/html/{{ domain }}
     owner: www-data
@@ -42,7 +42,7 @@
     recurse: yes
   become: yes
   become_user: root
-- name: Borramos el index.html de mediawiki
+- name: Borrar el index.html de prueba
   file:
     path: /var/www/html/{{ domain }}/index.html
     state: absent
